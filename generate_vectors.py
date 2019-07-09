@@ -116,8 +116,8 @@ def tokenize_text(input_filename, output_filename):
 
     start = time.time()
 
-    with open(output_filename, 'w') as out:
-        with open(input_filename, 'r') as inp:
+    with open(output_filename, 'w', encoding='utf-8') as out:
+        with open(input_filename, 'r', encoding='utf-8') as inp:
 
             for i, text in enumerate(inp.readlines()):
 
@@ -144,8 +144,8 @@ def process_wiki_to_text(input_filename, output_text_filename, output_sentences_
     intermediary_time = None
     sentences_count = 0
 
-    with open(output_text_filename, 'w') as out:
-        with open(output_sentences_filename, 'w') as out_sentences:
+    with open(output_text_filename, 'w', encoding='utf-8') as out:
+        with open(output_sentences_filename, 'w', encoding='utf-8') as out_sentences:
 
             # Open the Wiki Dump with gensim
             wiki = WikiCorpus(input_filename, lemmatize=False, dictionary={}, processes=cpu_count())
@@ -186,7 +186,8 @@ def process_wiki_to_text(input_filename, output_text_filename, output_sentences_
 if __name__ == '__main__':
 
     if not os.path.isfile(INPUT_FILENAME):
-        wget.download(JA_WIKI_LATEST_URL)
+        print(INPUT_FILENAME)
+        # wget.download(JA_WIKI_LATEST_URL)
 
     process_wiki_to_text(INPUT_FILENAME, JA_WIKI_TEXT_FILENAME, JA_WIKI_SENTENCES_FILENAME)
     tokenize_text(JA_WIKI_TEXT_FILENAME, JA_WIKI_TEXT_TOKENS_FILENAME)
