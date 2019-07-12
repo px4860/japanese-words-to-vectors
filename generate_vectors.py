@@ -67,6 +67,20 @@ else:
     logging.info('Using the tinysegmenter tokenizer. Its not very accurate. ' +
                  'Consider using MeCab instead with option --mecab.')
 
+# 分块读取
+def read_in_chunks(filePath, chunk_size=20*1024*1024):
+    """
+    Lazy function (generator) to read a file piece by piece.
+    Default chunk size: 20M
+    You can set your own chunk size
+    """
+    file_object = open(filePath, 'r', encoding='utf-8')
+    while True:
+        chunk_data = file_object.read(chunk_size)
+        if not chunk_data:
+            break
+        yield chunk_data
+
 # CHECK WHERE THE HECK ARE THE PUNCTUATIONS GONE. Okay it's in get_text()
 # WHY WE DO NOT HAVE ANY OUTPUT ON WORD2VEC. We have to define a logging interface
 
@@ -77,13 +91,17 @@ def generate_vectors(input_filename, output_filename, output_filename_2):
         return
 
     start = time.time()
-
-    model = Word2Vec(LineSentence(input_filename),
-                     size=VECTORS_SIZE,
-                     window=5,
-                     min_count=5,
-                     workers=4,
-                     iter=5)
+    model = None
+    for chunk in read_in_chunks(input_filename):
+        if not model:
+            model = Word2Vec(chunk.split(' '),
+                             size=VECTORS_SIZE,
+                             window=5,
+                             min_count=5,
+                             workers=4,
+                             iter=5)
+        else:
+            model.train(chunk.split(' '), total_examples=model.corpus_count, epochs=model.iter)
 
     model.save(output_filename)
     model.wv.save_word2vec_format(output_filename_2, binary=False)
