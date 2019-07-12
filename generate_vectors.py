@@ -94,7 +94,7 @@ def generate_vectors(input_filename, output_filename, output_filename_2):
 def get_words(text):
 
     import MeCab
-    mt = MeCab.Tagger('-d /usr/lib/mecab/dic/mecab-ipadic-neologd')
+    mt = MeCab.Tagger('-Owakati')
 
     mt.parse('')
 
