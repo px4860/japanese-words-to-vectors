@@ -107,7 +107,7 @@ def generate_vectors(input_filename, output_filename, output_filename_2):
                              workers=4,
                              iter=5)
         else:
-            model.train([i.split(' ')[1:-1] for i in chunk.split('\n')], total_examples=model.corpus_count, epochs=model.iter)
+            model.train([i.split(' ')[1:-1] for i in chunk.split('\n')], total_examples=len(chunk.split('\n')), epochs=model.iter)
 
     model.save(output_filename)
     model.wv.save_word2vec_format(output_filename_2, binary=False)
