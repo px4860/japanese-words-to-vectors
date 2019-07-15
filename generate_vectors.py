@@ -100,14 +100,14 @@ def generate_vectors(input_filename, output_filename, output_filename_2):
     model = None
     for chunk in read_in_chunks(input_filename):
         if not model:
-            model = Word2Vec(chunk.split(' '),
+            model = Word2Vec([i.split(' ')[1:-1] for i in chunk.split('\n')],
                              size=VECTORS_SIZE,
                              window=5,
                              min_count=5,
                              workers=4,
                              iter=5)
         else:
-            model.train(chunk.split(' '), total_examples=model.corpus_count, epochs=model.iter)
+            model.train([i.split(' ')[1:-1] for i in chunk.split('\n')], total_examples=model.corpus_count, epochs=model.iter)
 
     model.save(output_filename)
     model.wv.save_word2vec_format(output_filename_2, binary=False)
@@ -150,7 +150,7 @@ def tokenize_text(input_filename, output_filename):
                 else:
                     tokenized_text = ' '.join(tinysegmenter.tokenize(text))
 
-                out.write(tokenized_text)
+                out.write(tokenized_text+'\n')
 
                 if i % 100 == 0 and i != 0:
                     logging.info('Tokenized {} articles.'.format(i))
@@ -214,7 +214,7 @@ if __name__ == '__main__':
         # wget.download(JA_WIKI_LATEST_URL)
 
     process_wiki_to_text(INPUT_FILENAME, JA_WIKI_TEXT_FILENAME, JA_WIKI_SENTENCES_FILENAME)
-    tokenize_text(JA_WIKI_TEXT_FILENAME, JA_WIKI_TEXT_TOKENS_FILENAME)
+    tokenize_text(JA_WIKI_SENTENCES_FILENAME, JA_WIKI_TEXT_TOKENS_FILENAME)
 
     # Useful for sentences to vec (skip thought vectors) but not for word2vec.
     # tokenize_text(JA_WIKI_SENTENCES_FILENAME, JA_WIKI_SENTENCES_TOKENS_FILENAME)
