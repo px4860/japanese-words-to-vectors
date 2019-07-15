@@ -6,8 +6,8 @@ import logging
 import os
 import time
 from multiprocessing import cpu_count
-
 import tinysegmenter
+import re
 import wget
 from gensim.corpora import WikiCorpus
 from gensim.models import Word2Vec
@@ -80,6 +80,12 @@ def read_in_chunks(filePath, chunk_size=20*1024*1024):
         if not chunk_data:
             break
         yield chunk_data
+
+
+# 自定义序列化
+def tokenizer_func(text: str, token_min_len=2, token_max_len=15, lower=False):
+    return [x for x in re.split('[\n。]', text) if len(x) > 15]
+
 
 # CHECK WHERE THE HECK ARE THE PUNCTUATIONS GONE. Okay it's in get_text()
 # WHY WE DO NOT HAVE ANY OUTPUT ON WORD2VEC. We have to define a logging interface
@@ -166,7 +172,7 @@ def process_wiki_to_text(input_filename, output_text_filename, output_sentences_
         with open(output_sentences_filename, 'w', encoding='utf-8') as out_sentences:
 
             # Open the Wiki Dump with gensim
-            wiki = WikiCorpus(input_filename, lemmatize=False, dictionary={}, processes=cpu_count())
+            wiki = WikiCorpus(input_filename, lemmatize=False, dictionary={}, processes=cpu_count(),tokenizer_func=tokenizer_func)
             wiki.metadata = True
             texts = wiki.get_texts()
 
