@@ -30,7 +30,7 @@ def Main(flag_s, source, target):
                 flag = 0
                 dataList = []
 
-    # 处理最后一批行数少于200万行的
+    # 处理最后一批数据
     with open(target_dir + "ja_token_list_" + str(name) + ".txt", 'w+', encoding='utf-8') as f_target:
         for data in dataList:
             f_target.write(data)
